@@ -32,7 +32,7 @@ func TestCommandFlagParsing(t *testing.T) {
 			Aliases:     []string{"tc"},
 			Usage:       "this is for testing",
 			Description: "testing",
-			Action:      func(_ *Context) {},
+			Action:      func(_ *Context) error {return nil},
 		}
 
 		command.SkipFlagParsing = c.skipFlagParsing

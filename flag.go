@@ -9,15 +9,10 @@ import (
 	"time"
 )
 
-// This flag enables bash-completion for all commands and subcommands
-var BashCompletionFlag = BoolFlag{
-	Name: "generate-bash-completion",
-}
-
 // This flag prints the version for the application
 var VersionFlag = BoolFlag{
 	Name:  "version, v",
-	Usage: "print the version",
+	Usage: "Print the version",
 }
 
 // This flag prints the help for all commands and subcommands
@@ -25,7 +20,7 @@ var VersionFlag = BoolFlag{
 // unless HideHelp is set to true)
 var HelpFlag = BoolFlag{
 	Name:  "help, h",
-	Usage: "show help",
+	Usage: "Show help",
 }
 
 // Flag is a common interface related to parsing flags in cli.
@@ -36,6 +31,10 @@ type Flag interface {
 	// Apply Flag settings to the given flag set
 	Apply(*flag.FlagSet)
 	getName() string
+}
+
+func FlagSet(name string, flags []Flag) *flag.FlagSet {
+	return flagSet(name, flags)
 }
 
 func flagSet(name string, flags []Flag) *flag.FlagSet {

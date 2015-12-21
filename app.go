@@ -13,26 +13,18 @@ import (
 type App struct {
 	// The name of the program. Defaults to os.Args[0]
 	Name string
-	// Full name of command for help, defaults to Name
-	HelpName string
 	// Description of the program.
 	Usage string
-	// Description of the program argument format.
-	ArgsUsage string
 	// Version of the program
 	Version string
 	// List of commands to execute
 	Commands []Command
 	// List of flags to parse
 	Flags []Flag
-	// Boolean to enable bash completion commands
-	EnableBashCompletion bool
 	// Boolean to hide built-in help command
 	HideHelp bool
 	// Boolean to hide built-in version flag
 	HideVersion bool
-	// An action to execute when the bash-completion flag is set
-	BashComplete func(context *Context)
 	// An action to execute before any subcommands are run, but after the context is ready
 	// If a non-nil error is returned, no subcommands are run
 	Before func(context *Context) error
@@ -40,19 +32,11 @@ type App struct {
 	// It is run even if Action() panics
 	After func(context *Context) error
 	// The action to execute when no subcommands are specified
-	Action func(context *Context)
+	Action func(context *Context) error
 	// Execute this function if the proper command cannot be found
 	CommandNotFound func(context *Context, command string)
 	// Compilation date
 	Compiled time.Time
-	// List of all authors who contributed
-	Authors []Author
-	// Copyright of the binary if any
-	Copyright string
-	// Name of Author (Note: Use App.Authors, this is deprecated)
-	Author string
-	// Email of Author (Note: Use App.Authors, this is deprecated)
-	Email string
 	// Writer writer to write output to
 	Writer io.Writer
 }
@@ -67,46 +51,31 @@ func compileTime() time.Time {
 	return info.ModTime()
 }
 
-// Creates a new cli Application with some reasonable defaults for Name, Usage, Version and Action.
+// NewApp creates a new cli Application with some reasonable defaults for Name, Usage, Version and Action.
 func NewApp() *App {
 	return &App{
 		Name:         os.Args[0],
-		HelpName:     os.Args[0],
 		Usage:        "A new cli application",
 		Version:      "0.0.0",
-		BashComplete: DefaultAppComplete,
 		Action:       helpCommand.Action,
 		Compiled:     compileTime(),
 		Writer:       os.Stdout,
 	}
 }
 
-// Entry point to the cli app. Parses the arguments slice and routes to the proper flag/args combination
+// NewCLI is an alias for NewApp.
+func NewCLI() *App {
+	return NewApp()
+}
+
+// Run is an entry point to the cli app. Parses the arguments slice and routes to the proper flag/args combination
 func (a *App) Run(arguments []string) (err error) {
-	if a.Author != "" || a.Email != "" {
-		a.Authors = append(a.Authors, Author{Name: a.Author, Email: a.Email})
-	}
-
-	newCmds := []Command{}
-	for _, c := range a.Commands {
-		if c.HelpName == "" {
-			c.HelpName = fmt.Sprintf("%s %s", a.HelpName, c.Name)
-		}
-		newCmds = append(newCmds, c)
-	}
-	a.Commands = newCmds
-
 	// append help to commands
 	if a.Command(helpCommand.Name) == nil && !a.HideHelp {
 		a.Commands = append(a.Commands, helpCommand)
 		if (HelpFlag != BoolFlag{}) {
 			a.appendFlag(HelpFlag)
 		}
-	}
-
-	//append version/help flags
-	if a.EnableBashCompletion {
-		a.appendFlag(BashCompletionFlag)
 	}
 
 	if !a.HideVersion {
@@ -126,12 +95,8 @@ func (a *App) Run(arguments []string) (err error) {
 	}
 	context := NewContext(a, set, nil)
 
-	if checkCompletions(context) {
-		return nil
-	}
-
 	if err != nil {
-		fmt.Fprintln(a.Writer, "Incorrect Usage.")
+		fmt.Fprintf(a.Writer, "Incorrect Usage.\n%s\n", err)
 		fmt.Fprintln(a.Writer)
 		ShowAppHelp(context)
 		return err
@@ -177,8 +142,7 @@ func (a *App) Run(arguments []string) (err error) {
 	}
 
 	// Run default Action
-	a.Action(context)
-	return nil
+	return a.Action(context)
 }
 
 // Another entry point to the cli app, takes care of passing arguments and error handling
@@ -201,20 +165,6 @@ func (a *App) RunAsSubcommand(ctx *Context) (err error) {
 		}
 	}
 
-	newCmds := []Command{}
-	for _, c := range a.Commands {
-		if c.HelpName == "" {
-			c.HelpName = fmt.Sprintf("%s %s", a.HelpName, c.Name)
-		}
-		newCmds = append(newCmds, c)
-	}
-	a.Commands = newCmds
-
-	// append flags
-	if a.EnableBashCompletion {
-		a.appendFlag(BashCompletionFlag)
-	}
-
 	// parse flags
 	set := flagSet(a.Name, a.Flags)
 	set.SetOutput(ioutil.Discard)
@@ -233,12 +183,8 @@ func (a *App) RunAsSubcommand(ctx *Context) (err error) {
 		return nerr
 	}
 
-	if checkCompletions(context) {
-		return nil
-	}
-
 	if err != nil {
-		fmt.Fprintln(a.Writer, "Incorrect Usage.")
+		fmt.Fprintf(ctx.App.Writer, "Incorrect Usage.\n%s\n", err)
 		fmt.Fprintln(a.Writer)
 		ShowSubcommandHelp(context)
 		return err

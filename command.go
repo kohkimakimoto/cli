@@ -18,10 +18,6 @@ type Command struct {
 	Usage string
 	// A longer explanation of how the command works
 	Description string
-	// A short description of the arguments of this command
-	ArgsUsage string
-	// The function to call when checking for bash command completions
-	BashComplete func(context *Context)
 	// An action to execute before any sub-subcommands are run, but after the context is ready
 	// If a non-nil error is returned, no sub-subcommands are run
 	Before func(context *Context) error
@@ -29,7 +25,7 @@ type Command struct {
 	// It is run even if Action() panics
 	After func(context *Context) error
 	// The function to call when this command is invoked
-	Action func(context *Context)
+	Action func(context *Context) error
 	// List of child commands
 	Subcommands []Command
 	// List of flags to parse
@@ -38,9 +34,11 @@ type Command struct {
 	SkipFlagParsing bool
 	// Boolean to hide built-in help command
 	HideHelp bool
+	// custom help template
+	HelpTemplate string
+	// Meta data to store custom values for the command.
+	Meta map[string]interface{}
 
-	// Full name of command for help, defaults to full command name, including parent commands.
-	HelpName        string
 	commandNamePath []string
 }
 
@@ -65,10 +63,6 @@ func (c Command) Run(ctx *Context) error {
 			c.Flags,
 			HelpFlag,
 		)
-	}
-
-	if ctx.App.EnableBashCompletion {
-		c.Flags = append(c.Flags, BashCompletionFlag)
 	}
 
 	set := flagSet(c.Name, c.Flags)
@@ -111,7 +105,7 @@ func (c Command) Run(ctx *Context) error {
 	}
 
 	if err != nil {
-		fmt.Fprintln(ctx.App.Writer, "Incorrect Usage.")
+		fmt.Fprintf(ctx.App.Writer, "Incorrect Usage.\n%s\n", err)
 		fmt.Fprintln(ctx.App.Writer)
 		ShowCommandHelp(ctx, c.Name)
 		return err
@@ -126,16 +120,11 @@ func (c Command) Run(ctx *Context) error {
 	}
 	context := NewContext(ctx.App, set, ctx)
 
-	if checkCommandCompletions(context, c.Name) {
-		return nil
-	}
-
 	if checkCommandHelp(context, c.Name) {
 		return nil
 	}
 	context.Command = c
-	c.Action(context)
-	return nil
+	return c.Action(context)
 }
 
 func (c Command) Names() []string {
@@ -163,12 +152,6 @@ func (c Command) startApp(ctx *Context) error {
 
 	// set the name and usage
 	app.Name = fmt.Sprintf("%s %s", ctx.App.Name, c.Name)
-	if c.HelpName == "" {
-		app.HelpName = c.HelpName
-	} else {
-		app.HelpName = fmt.Sprintf("%s %s", ctx.App.Name, c.Name)
-	}
-
 	if c.Description != "" {
 		app.Usage = c.Description
 	} else {
@@ -186,15 +169,7 @@ func (c Command) startApp(ctx *Context) error {
 	app.Version = ctx.App.Version
 	app.HideVersion = ctx.App.HideVersion
 	app.Compiled = ctx.App.Compiled
-	app.Author = ctx.App.Author
-	app.Email = ctx.App.Email
 	app.Writer = ctx.App.Writer
-
-	// bash completion
-	app.EnableBashCompletion = ctx.App.EnableBashCompletion
-	if c.BashComplete != nil {
-		app.BashComplete = c.BashComplete
-	}
 
 	// set the actions
 	app.Before = c.Before
