@@ -66,7 +66,6 @@ type Table struct {
 	rs       map[int]int
 	headers  []string
 	noHeaderLine bool
-	footers  []string
 	autoFmt  bool
 	autoWrap bool
 	mW       int
@@ -92,7 +91,6 @@ func NewTable(writer io.Writer) *Table {
 		rs:       make(map[int]int),
 		headers:  []string{},
 		noHeaderLine: false,
-		footers:  []string{},
 		autoFmt:  true,
 		autoWrap: true,
 		mW:       MAX_ROW_WIDTH,
@@ -131,7 +129,7 @@ func (t Table) Render() {
 	if !t.rowLine && t.border {
 		t.printLine(true)
 	}
-	t.printFooter()
+	// t.printFooter()
 
 }
 
@@ -145,15 +143,6 @@ func (t *Table) SetHeader(keys []string) {
 }
 func (t *Table) SetNoHeaderLine(b bool) {
 	t.noHeaderLine = b
-}
-
-// Set table Footer
-func (t *Table) SetFooter(keys []string) {
-	//t.colSize = len(keys)
-	for i, v := range keys {
-		t.parseDimension(v, i, -1)
-		t.footers = append(t.footers, v)
-	}
 }
 
 // Turn header autoformatting on/off. Default is on (true).
@@ -295,96 +284,6 @@ func (t Table) printHeading() {
 	if !t.noHeaderLine {
 		t.printLine(true)
 	}
-}
-
-// Print heading information
-func (t Table) printFooter() {
-	// Check if headers is available
-	if len(t.footers) < 1 {
-		return
-	}
-
-	// Only print line if border is not set
-	if !t.border {
-		t.printLine(true)
-	}
-	// Check if border is set
-	// Replace with space if not set
-	fmt.Fprint(t.out, ConditionString(t.border, t.pColumn, SPACE))
-
-	// Identify last column
-	end := len(t.cs) - 1
-
-	// Print Heading column
-	for i := 0; i <= end; i++ {
-		v := t.cs[i]
-		f := t.footers[i]
-		if t.autoFmt {
-			f = Title(f)
-		}
-		pad := ConditionString((i == end && !t.border), SPACE, t.pColumn)
-
-		if len(t.footers[i]) == 0 {
-			pad = SPACE
-		}
-		fmt.Fprintf(t.out, " %s %s",
-			Pad(f, SPACE, v),
-			pad)
-	}
-	// Next line
-	fmt.Fprintln(t.out)
-	//t.printLine(true)
-
-	hasPrinted := false
-
-	for i := 0; i <= end; i++ {
-		v := t.cs[i]
-		pad := t.pRow
-		center := t.pCenter
-		length := len(t.footers[i])
-
-		if length > 0 {
-			hasPrinted = true
-		}
-
-		// Set center to be space if length is 0
-		if length == 0 && !t.border {
-			center = SPACE
-		}
-
-		// Print first junction
-		if i == 0 {
-			fmt.Fprint(t.out, center)
-		}
-
-		// Pad With space of length is 0
-		if length == 0 {
-			pad = SPACE
-		}
-		// Ignore left space of it has printed before
-		if hasPrinted || t.border {
-			pad = t.pRow
-			center = t.pCenter
-		}
-
-		// Change Center start position
-		if center == SPACE {
-			if i < end && len(t.footers[i+1]) != 0 {
-				center = t.pCenter
-			}
-		}
-
-		// Print the footer
-		fmt.Fprintf(t.out, "%s%s%s%s",
-			pad,
-			strings.Repeat(string(pad), v),
-			pad,
-			center)
-
-	}
-
-	fmt.Fprintln(t.out)
-
 }
 
 func (t Table) printRows() {
