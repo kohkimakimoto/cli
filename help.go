@@ -62,9 +62,9 @@ Commands:
 `
 
 var helpCommand = Command{
-	Name:      "help",
-	Aliases:   []string{"h"},
-	Usage:     "Shows a list of commands or help for one command",
+	Name:    "help",
+	Aliases: []string{"h"},
+	Usage:   "Shows a list of commands or help for one command",
 	Action: func(c *Context) error {
 		args := c.Args()
 		if args.Present() {
@@ -77,9 +77,9 @@ var helpCommand = Command{
 }
 
 var helpSubcommand = Command{
-	Name:      "help",
-	Aliases:   []string{"h"},
-	Usage:     "Shows a list of commands or help for one command",
+	Name:    "help",
+	Aliases: []string{"h"},
+	Usage:   "Shows a list of commands or help for one command",
 	Action: func(c *Context) error {
 		args := c.Args()
 		if args.Present() {

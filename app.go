@@ -54,12 +54,12 @@ func compileTime() time.Time {
 // NewApp creates a new cli Application with some reasonable defaults for Name, Usage, Version and Action.
 func NewApp() *App {
 	return &App{
-		Name:         os.Args[0],
-		Usage:        "A new cli application",
-		Version:      "0.0.0",
-		Action:       helpCommand.Action,
-		Compiled:     compileTime(),
-		Writer:       os.Stdout,
+		Name:     os.Args[0],
+		Usage:    "A new cli application",
+		Version:  "0.0.0",
+		Action:   helpCommand.Action,
+		Compiled: compileTime(),
+		Writer:   os.Stdout,
 	}
 }
 

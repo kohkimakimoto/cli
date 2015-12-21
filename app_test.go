@@ -808,7 +808,7 @@ func TestApp_Run_Version(t *testing.T) {
 
 func TestApp_Run_DoesNotOverwriteErrorFromBefore(t *testing.T) {
 	app := NewApp()
-	app.Action = func(c *Context) error {return nil}
+	app.Action = func(c *Context) error { return nil }
 	app.Before = func(c *Context) error { return fmt.Errorf("before error") }
 	app.After = func(c *Context) error { return fmt.Errorf("after error") }
 
