@@ -19,6 +19,8 @@ type App struct {
 	Version string
 	// List of commands to execute
 	Commands []Command
+	// Default command is executed when no subcommand are specified
+	DefaultCommand string
 	// List of flags to parse
 	Flags []Flag
 	// Boolean to hide built-in help command
@@ -57,7 +59,7 @@ func NewApp() *App {
 		Name:     os.Args[0],
 		Usage:    "A new cli application",
 		Version:  "0.0.0",
-		Action:   helpCommand.Action,
+		Action:   HelpCommand.Action,
 		Compiled: compileTime(),
 		Writer:   os.Stdout,
 	}
@@ -71,8 +73,8 @@ func NewCLI() *App {
 // Run is an entry point to the cli app. Parses the arguments slice and routes to the proper flag/args combination
 func (a *App) Run(arguments []string) (err error) {
 	// append help to commands
-	if a.Command(helpCommand.Name) == nil && !a.HideHelp {
-		a.Commands = append(a.Commands, helpCommand)
+	if a.Command(HelpCommand.Name) == nil && !a.HideHelp {
+		a.Commands = append(a.Commands, HelpCommand)
 		if (HelpFlag != BoolFlag{}) {
 			a.appendFlag(HelpFlag)
 		}
@@ -141,6 +143,13 @@ func (a *App) Run(arguments []string) (err error) {
 		}
 	}
 
+	if a.DefaultCommand != "" {
+		c := a.Command(a.DefaultCommand)
+		if c != nil {
+			return c.Run(context)
+		}
+	}
+
 	// Run default Action
 	return a.Action(context)
 }
@@ -157,8 +166,8 @@ func (a *App) RunAndExitOnError() {
 func (a *App) RunAsSubcommand(ctx *Context) (err error) {
 	// append help to commands
 	if len(a.Commands) > 0 {
-		if a.Command(helpCommand.Name) == nil && !a.HideHelp {
-			a.Commands = append(a.Commands, helpCommand)
+		if a.Command(HelpCommand.Name) == nil && !a.HideHelp {
+			a.Commands = append(a.Commands, HelpCommand)
 			if (HelpFlag != BoolFlag{}) {
 				a.appendFlag(HelpFlag)
 			}

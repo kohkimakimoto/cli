@@ -61,7 +61,7 @@ Commands:
   {{end}}
 `
 
-var helpCommand = Command{
+var HelpCommand = Command{
 	Name:    "help",
 	Aliases: []string{"h"},
 	Usage:   "Shows a list of commands or help for one command",
@@ -76,7 +76,7 @@ var helpCommand = Command{
 	},
 }
 
-var helpSubcommand = Command{
+var HelpSubcommand = Command{
 	Name:    "help",
 	Aliases: []string{"h"},
 	Usage:   "Shows a list of commands or help for one command",

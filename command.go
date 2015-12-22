@@ -177,7 +177,7 @@ func (c Command) startApp(ctx *Context) error {
 	if c.Action != nil {
 		app.Action = c.Action
 	} else {
-		app.Action = helpSubcommand.Action
+		app.Action = HelpSubcommand.Action
 	}
 
 	var newCmds []Command
