@@ -19,8 +19,6 @@ type App struct {
 	Version string
 	// List of commands to execute
 	Commands []Command
-	// Default command is executed when no subcommand are specified
-	DefaultCommand string
 	// List of flags to parse
 	Flags []Flag
 	// Boolean to hide built-in help command
@@ -138,13 +136,6 @@ func (a *App) Run(arguments []string) (err error) {
 	if args.Present() {
 		name := args.First()
 		c := a.Command(name)
-		if c != nil {
-			return c.Run(context)
-		}
-	}
-
-	if a.DefaultCommand != "" {
-		c := a.Command(a.DefaultCommand)
 		if c != nil {
 			return c.Run(context)
 		}
