@@ -100,6 +100,10 @@ var HelpPrinter helpPrinter = printHelp
 var VersionPrinter = printVersion
 
 func ShowAppHelp(c *Context) {
+	DefaultAppHelp(c)
+}
+
+var DefaultAppHelp = func(c *Context) {
 	HelpPrinter(c.App.Writer, AppHelpTemplate, c.App)
 }
 
