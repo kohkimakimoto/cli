@@ -93,6 +93,7 @@ func NewTable(writer io.Writer) *Table {
 		noHeaderLine: false,
 		autoFmt:  true,
 		autoWrap: true,
+		// zero is unlimited
 		mW:       MAX_ROW_WIDTH,
 		pCenter:  CENTRE,
 		pRow:     ROW,
@@ -110,6 +111,7 @@ func NewPlainTable(writer io.Writer) *Table {
 	t := NewTable(writer)
 	t.SetBorder(false)
 	t.SetRowLine(false)
+	t.SetColWidth(0)
 	t.SetRowSeparator("")
 	t.SetNoHeaderLine(true)
 	t.SetCenterSeparator("")
@@ -377,7 +379,7 @@ func (t *Table) parseDimension(str string, colKey, rowKey int) []string {
 	w := DisplayWidth(str)
 	// Calculate Width
 	// Check if with is grater than maximum width
-	if w > t.mW {
+	if w > t.mW && t.mW != 0 {
 		w = t.mW
 	}
 
