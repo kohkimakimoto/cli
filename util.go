@@ -12,10 +12,10 @@ func GetStringFlagValue(args []string, flags ...string) string {
 			}
 			for _, flag := range flags {
 				if len(s) >= len(flag) && s[0:len(flag)] == flag {
-					if len(s) >= len(flag + "=") && s[0:len(flag + "=")] == flag + "=" {
+					if len(s) >= len(flag+"=") && s[0:len(flag+"=")] == flag+"=" {
 						return strings.Split(s, "=")[1]
 					} else if s == flag {
-						return args[i + 1]
+						return args[i+1]
 					}
 				}
 			}

@@ -1,6 +1,6 @@
 package cli
 
-import(
+import (
 	"testing"
 )
 

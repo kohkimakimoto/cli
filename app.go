@@ -55,7 +55,7 @@ func compileTime() time.Time {
 func NewApp() *App {
 	return &App{
 		Name:     os.Args[0],
-		Usage:    "A new cli application",
+		Usage:    "",
 		Version:  "0.0.0",
 		Action:   HelpCommand.Action,
 		Compiled: compileTime(),

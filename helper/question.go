@@ -1,21 +1,22 @@
 package helper
+
 import (
+	"bufio"
+	"fmt"
 	"io"
 	"os"
-	"fmt"
-	"bufio"
 	"strings"
 )
 
 type Question struct {
-	Msg string
+	Msg    string
 	Writer io.Writer
 	Reader io.Reader
 }
 
 func NewQuestion(msg string) *Question {
 	return &Question{
-		Msg:	msg,
+		Msg:    msg,
 		Writer: os.Stdout,
 		Reader: os.Stdin,
 	}
@@ -30,4 +31,3 @@ func (q *Question) Ask() string {
 
 	return str
 }
-

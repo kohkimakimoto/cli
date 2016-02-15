@@ -16,7 +16,7 @@ var AppHelpTemplate = `{{.Name}} {{.Version}}{{if .Usage}}
 {{.Usage}}{{end}}
 
 Usage:
-  {{.Name}} command{{if .Flags}} [options...]{{end}} [arguments...]
+  {{.Name}}{{if .Flags}} [<options>]{{end}} <command> [<arguments>]
 {{if .Flags}}
 Options:
   {{range .Flags}}{{.}}
@@ -29,10 +29,12 @@ Commands:
 // The text template for the command help topic.
 // cli.go uses text/template to render templates. You can
 // render custom help text by setting this variable.
-var CommandHelpTemplate = `Usage:
-  {{.FullName}}{{if .Flags}} [options...]{{end}} [arguments...]
+var CommandHelpTemplate = `{{.Name}}{{if .Usage}}
 
-{{if .Usage}}  {{.Usage}}{{end}}
+{{.Usage}}{{end}}
+
+Usage:
+  {{.Name}}{{if .Flags}} [<options>]{{end}} [<arguments>]
 
 {{if .Flags}}Options:
   {{range .Flags}}{{.}}
@@ -51,7 +53,7 @@ var SubcommandHelpTemplate = `{{.Name}}{{if .Usage}}
 {{.Usage}}{{end}}
 
 Usage:
-  {{.Name}} command{{if .Flags}} [options...]{{end}} [arguments...]
+  {{.Name}} <command>{{if .Flags}} [<options>]{{end}} [<arguments>]
 {{if .Flags}}
 Options:
   {{range .Flags}}{{.}}

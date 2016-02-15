@@ -26,12 +26,12 @@ package helper
 
 import (
 	"fmt"
+	"github.com/mattn/go-runewidth"
 	"io"
 	"math"
 	"regexp"
-	"unicode/utf8"
 	"strings"
-	"github.com/mattn/go-runewidth"
+	"unicode/utf8"
 )
 
 const (
@@ -43,7 +43,7 @@ const (
 	ROW    = "-"
 	COLUMN = "|"
 	SPACE  = " "
-	EMPTY = ""
+	EMPTY  = ""
 )
 
 const (
@@ -59,51 +59,51 @@ var (
 )
 
 type Table struct {
-	out      io.Writer
-	rows     [][]string
-	lines    [][][]string
-	cs       map[int]int
-	rs       map[int]int
-	headers  []string
+	out          io.Writer
+	rows         [][]string
+	lines        [][][]string
+	cs           map[int]int
+	rs           map[int]int
+	headers      []string
 	noHeaderLine bool
-	autoFmt  bool
-	autoWrap bool
-	mW       int
-	pCenter  string
-	pRow     string
-	pColumn  string
-	tColumn  int
-	tRow     int
-	align    int
-	rowLine  bool
-	border   bool
-	colSize  int
+	autoFmt      bool
+	autoWrap     bool
+	mW           int
+	pCenter      string
+	pRow         string
+	pColumn      string
+	tColumn      int
+	tRow         int
+	align        int
+	rowLine      bool
+	border       bool
+	colSize      int
 }
 
 // Start New Table
 // Take io.Writer Directly
 func NewTable(writer io.Writer) *Table {
 	t := &Table{
-		out:      writer,
-		rows:     [][]string{},
-		lines:    [][][]string{},
-		cs:       make(map[int]int),
-		rs:       make(map[int]int),
-		headers:  []string{},
+		out:          writer,
+		rows:         [][]string{},
+		lines:        [][][]string{},
+		cs:           make(map[int]int),
+		rs:           make(map[int]int),
+		headers:      []string{},
 		noHeaderLine: false,
-		autoFmt:  true,
-		autoWrap: true,
+		autoFmt:      true,
+		autoWrap:     true,
 		// zero is unlimited
-		mW:       MAX_ROW_WIDTH,
-		pCenter:  CENTRE,
-		pRow:     ROW,
-		pColumn:  COLUMN,
-		tColumn:  -1,
-		tRow:     -1,
-		align:    ALIGN_DEFAULT,
-		rowLine:  false,
-		border:   true,
-		colSize:  -1}
+		mW:      MAX_ROW_WIDTH,
+		pCenter: CENTRE,
+		pRow:    ROW,
+		pColumn: COLUMN,
+		tColumn: -1,
+		tRow:    -1,
+		align:   ALIGN_DEFAULT,
+		rowLine: false,
+		border:  true,
+		colSize: -1}
 	return t
 }
 
