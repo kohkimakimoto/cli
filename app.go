@@ -17,6 +17,8 @@ type App struct {
 	Usage string
 	// Version of the program
 	Version string
+	// Short info of the program
+	ShortInfo string
 	// List of commands to execute
 	Commands []Command
 	// List of flags to parse

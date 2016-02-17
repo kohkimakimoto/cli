@@ -11,13 +11,13 @@ import (
 // The text template for the Default help topic.
 // cli.go uses text/template to render templates. You can
 // render custom help text by setting this variable.
-var AppHelpTemplate = `{{.Name}} {{.Version}}{{if .Usage}}
+var AppHelpTemplate = `Usage: {{.Name}} <command>{{if .Flags}} [<options...>]{{end}} [<arguments...>]
 
-{{.Usage}}{{end}}
+  {{.Name}}{{if .Usage}} -- {{.Usage}}{{end}}{{if .Version}}
+  version {{.Version}}{{end}}{{if .ShortInfo}}
 
-Usage:
-  {{.Name}}{{if .Flags}} [<options>]{{end}} <command> [<arguments>]
-{{if .Flags}}
+  {{.ShortInfo}}{{end}}{{if .Flags}}
+
 Options:
   {{range .Flags}}{{.}}
   {{end}}{{end}}
@@ -29,12 +29,9 @@ Commands:
 // The text template for the command help topic.
 // cli.go uses text/template to render templates. You can
 // render custom help text by setting this variable.
-var CommandHelpTemplate = `{{.Name}}{{if .Usage}}
-
-{{.Usage}}{{end}}
-
-Usage:
-  {{.Name}}{{if .Flags}} [<options>]{{end}} [<arguments>]
+var CommandHelpTemplate = `Usage: {{.Name}}{{if .Flags}} [<options...>]{{end}} [<arguments...>]
+{{if .Usage}}
+  {{.Usage}}{{end}}
 
 {{if .Flags}}Options:
   {{range .Flags}}{{.}}
@@ -48,14 +45,11 @@ Description:
 // The text template for the subcommand help topic.
 // cli.go uses text/template to render templates. You can
 // render custom help text by setting this variable.
-var SubcommandHelpTemplate = `{{.Name}}{{if .Usage}}
+var SubcommandHelpTemplate = `Usage: {{.Name}} <command>{{if .Flags}} [<options...>]{{end}} [<arguments...>]
+{{if .Usage}}
+  {{.Usage}}{{end}}
 
-{{.Usage}}{{end}}
-
-Usage:
-  {{.Name}} <command>{{if .Flags}} [<options>]{{end}} [<arguments>]
-{{if .Flags}}
-Options:
+{{if .Flags}}Options:
   {{range .Flags}}{{.}}
   {{end}}{{end}}
 Commands:

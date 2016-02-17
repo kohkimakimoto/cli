@@ -9,6 +9,9 @@ import (
 func main() {
 	CLI := cli.NewCLI()
 	CLI.Name = "example"
+	CLI.Version = "0.1.0"
+	CLI.Usage = "aaaa"
+	CLI.ShortInfo = "aaaaa\n  bbbb"
 	CLI.Commands = []cli.Command{
 		cli.Command{
 			Name: "hello",
